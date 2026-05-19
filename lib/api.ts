@@ -17,7 +17,18 @@ export type NoteListResponse = {
 
 axios.defaults.baseURL = "https://next-v1-notes-api.goit.study";
 
-export const getNotes = async () => {
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+export const getNotes = async (): Promise<NoteListResponse> => {
+  await delay(2000);
+
   const res = await axios.get<NoteListResponse>("/notes");
+
+  return res.data;
+};
+
+export const getSingleNote = async (id: string): Promise<Note> => {
+  const res = await axios.get<Note>(`/notes/${id}`);
+
   return res.data;
 };
