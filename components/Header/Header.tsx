@@ -1,5 +1,6 @@
 import css from "./Header.module.css";
 import Link from "next/link";
+
 const Header = () => {
   return (
     <header className={css.header}>
@@ -13,12 +14,6 @@ const Header = () => {
           </li>
           <li>
             <Link href="/notes">Notes</Link>
-          </li>
-          <li>
-            <Link href="/profile">Profile</Link>
-          </li>
-          <li>
-            <Link href="/about">About</Link>
           </li>
         </ul>
       </nav>

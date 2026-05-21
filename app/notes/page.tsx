@@ -1,17 +1,66 @@
-// app/notes/page.tsx
+"use client";
 
-import NoteList from "@/components/NoteList/NoteList";
-import { getNotes } from "@/lib/api";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useDebouncedCallback } from "use-debounce";
 
-const Notes = async () => {
-  const response = await getNotes();
+import css from "./notes.module.css";
+import { fetchNotes } from "../../lib/api";
+
+import NoteList from "../../components/NoteList/NoteList";
+import SearchBox from "../../components/SearchBox/SearchBox";
+import Pagination from "../../components/Pagination/Pagination";
+
+import Modal from "../../components/Modal/Modal";
+import NoteForm from "../../components/NoteForm/NoteForm";
+
+export default function Notes() {
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const debouncedSearch = useDebouncedCallback((value: string) => {
+    setSearch(value);
+    setPage(1);
+  }, 300);
+
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["notes", page, search],
+    queryFn: () =>
+      fetchNotes({
+        page,
+        perPage: 12,
+        search,
+      }),
+    placeholderData: (prev) => prev,
+  });
+
+  const notes = data?.notes ?? [];
+  const totalPages = data?.totalPages ?? 0;
 
   return (
-    <section>
-      <h1>Notes List</h1>
-      {response?.notes?.length > 0 && <NoteList notes={response.notes} />}
-    </section>
-  );
-};
+    <div className={css.app}>
+      <header className={css.toolbar}>
+        <SearchBox onChange={debouncedSearch} />
+      </header>
 
-export default Notes;
+      <button onClick={() => setIsModalOpen(true)} className={css.button}>
+        Create note +
+      </button>
+
+      {isLoading && <p>Loading...</p>}
+      {isError && <p>Error loading notes</p>}
+
+      {totalPages > 1 && (
+        <Pagination totalPages={totalPages} page={page} setPage={setPage} />
+      )}
+
+      {notes.length > 0 && <NoteList notes={notes} />}
+      {isModalOpen && (
+        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+          <NoteForm onClose={() => setIsModalOpen(false)} />
+        </Modal>
+      )}
+    </div>
+  );
+}
