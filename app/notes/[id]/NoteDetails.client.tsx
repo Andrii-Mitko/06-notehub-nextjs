@@ -10,8 +10,8 @@ export default function NoteDetailsClient({ id }: { id: string }) {
     retry: false,
   });
 
-  if (isLoading) return <p>Loading...</p>;
-  if (isError) return <p>Error loading note</p>;
+  if (isLoading) return <p>Loading, please wait...</p>;
+  if (isError) return <p>Something went wrong.</p>;
   if (!data) return <p>Note not found</p>;
 
   return (
