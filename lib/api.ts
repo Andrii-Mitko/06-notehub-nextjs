@@ -3,7 +3,9 @@ import type { Note, NoteTag } from "../types/note";
 
 axios.defaults.baseURL = "https://notehub-public.goit.study/api";
 
-axios.defaults.headers.common.Authorization = `Bearer ${process.env.NEXT_PUBLIC_NOTEHUB_TOKEN}`;
+const token = process.env.NEXT_PUBLIC_NOTEHUB_TOKEN;
+
+axios.defaults.headers.common.Authorization = token ? `Bearer ${token}` : "";
 
 export interface FetchNotesResponse {
   notes: Note[];
@@ -38,6 +40,11 @@ export const fetchNotes = async ({
   return data;
 };
 
+export const fetchNoteById = async (id: string): Promise<Note> => {
+  const { data } = await axios.get<Note>(`/notes/${id}`);
+  return data;
+};
+
 export const createNote = async (noteData: CreateNoteData): Promise<Note> => {
   const { data } = await axios.post<Note>("/notes", noteData);
   return data;
@@ -46,14 +53,4 @@ export const createNote = async (noteData: CreateNoteData): Promise<Note> => {
 export const deleteNote = async (noteId: string): Promise<Note> => {
   const { data } = await axios.delete<Note>(`/notes/${noteId}`);
   return data;
-};
-
-export const fetchNoteById = async (id: string) => {
-  const res = await fetch(`https://next-v1-notes-api.goit.study/notes/${id}`);
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch note");
-  }
-
-  return res.json();
 };
