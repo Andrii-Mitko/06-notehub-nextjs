@@ -1,7 +1,5 @@
 "use client";
 
-const error = (error: { message: string }) => {
-  return <p>Could not fetch the list of notes. {error.message}</p>;
-};
-
-export default error;
+export default function Error() {
+  return <p>Something went wrong while loading note.</p>;
+}
