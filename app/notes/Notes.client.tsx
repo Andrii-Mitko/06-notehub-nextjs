@@ -1,7 +1,8 @@
 "use client";
 
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+
 import { useDebouncedCallback } from "use-debounce";
 
 import css from "./notes.module.css";
@@ -23,7 +24,6 @@ export default function NotesClient() {
     setSearch(value);
     setPage(1);
   }, 300);
-
   const { data, isLoading, isError } = useQuery({
     queryKey: ["notes", page, search],
     queryFn: () =>
@@ -32,6 +32,7 @@ export default function NotesClient() {
         perPage: 12,
         search,
       }),
+    placeholderData: keepPreviousData,
   });
 
   const notes = data?.notes ?? [];
